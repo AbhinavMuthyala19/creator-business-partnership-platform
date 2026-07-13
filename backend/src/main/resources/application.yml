@@ -30,6 +30,7 @@ app:
     max-file-size-bytes: ${UPLOAD_MAX_BYTES:20971520}
     allowed-image-types: image/png,image/jpeg,image/webp,image/gif
     allowed-video-types: video/mp4,video/quicktime,video/webm
+    allowed-document-types: application/pdf
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
   apify:

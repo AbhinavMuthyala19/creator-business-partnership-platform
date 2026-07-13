@@ -1,0 +1,107 @@
+package club.escobar.service.impl;
+
+import club.escobar.dto.kyc.CreatorKycProfileResponse;
+import club.escobar.dto.kyc.CreatorKycReviewDetailResponse;
+import club.escobar.dto.kyc.CreatorKycReviewRequest;
+import club.escobar.dto.kyc.CreatorKycSubmitRequest;
+import club.escobar.entity.CreatorKycProfile;
+import club.escobar.entity.User;
+import club.escobar.entity.enums.KycStatus;
+import club.escobar.exception.ForbiddenActionException;
+import club.escobar.exception.InvalidStateTransitionException;
+import club.escobar.exception.ResourceNotFoundException;
+import club.escobar.mapper.CreatorKycMapper;
+import club.escobar.repository.ApplicationRepository;
+import club.escobar.repository.CreatorKycProfileRepository;
+import club.escobar.repository.UserRepository;
+import club.escobar.service.CreatorKycService;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
+
+@Service
+@RequiredArgsConstructor
+public class CreatorKycServiceImpl implements CreatorKycService {
+
+    private static final Logger log = LoggerFactory.getLogger(CreatorKycServiceImpl.class);
+
+    private final CreatorKycProfileRepository creatorKycProfileRepository;
+    private final ApplicationRepository applicationRepository;
+    private final UserRepository userRepository;
+    private final CreatorKycMapper creatorKycMapper;
+
+    @Override
+    @Transactional
+    public CreatorKycProfileResponse submit(Long creatorUserId, CreatorKycSubmitRequest request) {
+        CreatorKycProfile profile = creatorKycProfileRepository.findByCreator_Id(creatorUserId)
+                .orElseGet(() -> {
+                    User creator = userRepository.findById(creatorUserId)
+                            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+                    return CreatorKycProfile.builder().creator(creator).build();
+                });
+
+        profile.setPanNumber(request.panNumber());
+        profile.setNameOnPan(request.nameOnPan());
+        profile.setDocumentUrl(request.documentUrl());
+        profile.setStatus(KycStatus.PENDING);
+        profile.setReviewedBy(null);
+        profile.setReviewNote(null);
+        profile.setReviewedAt(null);
+
+        CreatorKycProfile saved = creatorKycProfileRepository.save(profile);
+        log.info("Creator id={} submitted KYC", creatorUserId);
+        return creatorKycMapper.toResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CreatorKycProfileResponse getOwn(Long creatorUserId) {
+        return creatorKycMapper.toResponse(findByCreatorId(creatorUserId));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CreatorKycReviewDetailResponse getForReview(Long businessUserId, Long creatorUserId) {
+        assertReviewable(businessUserId, creatorUserId);
+        return creatorKycMapper.toReviewDetailResponse(findByCreatorId(creatorUserId));
+    }
+
+    @Override
+    @Transactional
+    public CreatorKycReviewDetailResponse review(Long businessUserId, Long creatorUserId, CreatorKycReviewRequest request) {
+        assertReviewable(businessUserId, creatorUserId);
+
+        CreatorKycProfile profile = findByCreatorId(creatorUserId);
+        if (profile.getStatus() != KycStatus.PENDING) {
+            throw new InvalidStateTransitionException(
+                    "Cannot review KYC that is already " + profile.getStatus());
+        }
+        if (request.status() == KycStatus.PENDING) {
+            throw new InvalidStateTransitionException("Cannot set KYC status back to PENDING");
+        }
+
+        profile.setStatus(request.status());
+        profile.setReviewedBy(userRepository.getReferenceById(businessUserId));
+        profile.setReviewNote(request.reviewNote());
+        profile.setReviewedAt(Instant.now());
+
+        CreatorKycProfile saved = creatorKycProfileRepository.save(profile);
+        log.info("Business id={} reviewed KYC for creator id={}: {}", businessUserId, creatorUserId, request.status());
+        return creatorKycMapper.toReviewDetailResponse(saved);
+    }
+
+    private void assertReviewable(Long businessUserId, Long creatorUserId) {
+        if (!applicationRepository.existsByCreator_IdAndCampaign_Business_Id(creatorUserId, businessUserId)) {
+            throw new ForbiddenActionException("You may only review KYC for creators who have applied to your campaigns");
+        }
+    }
+
+    private CreatorKycProfile findByCreatorId(Long creatorUserId) {
+        return creatorKycProfileRepository.findByCreator_Id(creatorUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("KYC profile not found for creator id " + creatorUserId));
+    }
+}

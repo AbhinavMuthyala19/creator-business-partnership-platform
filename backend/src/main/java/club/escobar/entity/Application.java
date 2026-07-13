@@ -10,9 +10,9 @@ import java.time.Instant;
 @Entity
 @Table(name = "applications", indexes = {
         @Index(name = "idx_applications_creator", columnList = "creator_id"),
-        @Index(name = "idx_applications_business", columnList = "business_id"),
+        @Index(name = "idx_applications_campaign", columnList = "campaign_id"),
         @Index(name = "idx_applications_status", columnList = "status"),
-        @Index(name = "idx_applications_creator_business", columnList = "creator_id, business_id", unique = true)
+        @Index(name = "idx_applications_creator_campaign", columnList = "creator_id, campaign_id", unique = true)
 })
 @Getter
 @Setter
@@ -30,8 +30,8 @@ public class Application {
     private User creator;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "business_id", nullable = false)
-    private User business;
+    @JoinColumn(name = "campaign_id", nullable = false)
+    private Campaign campaign;
 
     @Column(name = "pitch_message", nullable = false, columnDefinition = "TEXT")
     private String pitchMessage;

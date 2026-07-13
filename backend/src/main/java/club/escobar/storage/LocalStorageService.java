@@ -39,6 +39,7 @@ public class LocalStorageService implements StorageService {
         List<String> allowed = new java.util.ArrayList<>();
         allowed.addAll(storageProperties.allowedImageTypes());
         allowed.addAll(storageProperties.allowedVideoTypes());
+        allowed.addAll(storageProperties.allowedDocumentTypes());
         if (contentType == null || allowed.stream().noneMatch(contentType::equalsIgnoreCase)) {
             throw new ApiException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Unsupported file type: " + contentType);
         }

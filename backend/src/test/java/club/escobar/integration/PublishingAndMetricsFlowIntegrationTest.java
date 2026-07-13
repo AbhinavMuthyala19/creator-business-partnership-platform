@@ -5,6 +5,9 @@ import club.escobar.dto.application.ApplicationResponse;
 import club.escobar.dto.application.ApplicationStatusUpdateRequest;
 import club.escobar.dto.auth.AuthResponse;
 import club.escobar.dto.auth.RegisterRequest;
+import club.escobar.dto.campaign.CampaignCreateRequest;
+import club.escobar.dto.campaign.CampaignResponse;
+import club.escobar.dto.campaign.CampaignUpdateRequest;
 import club.escobar.dto.common.PageResponse;
 import club.escobar.dto.content.ContentCreateRequest;
 import club.escobar.dto.content.ContentPublishRequest;
@@ -13,6 +16,7 @@ import club.escobar.dto.content.ContentReviewRequest;
 import club.escobar.dto.metrics.ContentMetricsSnapshotResponse;
 import club.escobar.dto.metrics.LeaderboardEntryResponse;
 import club.escobar.entity.enums.ApplicationStatus;
+import club.escobar.entity.enums.CampaignStatus;
 import club.escobar.entity.enums.ContentStatus;
 import club.escobar.entity.enums.MediaType;
 import club.escobar.entity.enums.UserRole;
@@ -26,6 +30,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -58,14 +65,31 @@ class PublishingAndMetricsFlowIntegrationTest extends AbstractIntegrationTest {
         return headers;
     }
 
+    private Long createActiveCampaign(AuthResponse businessAuth, String title) {
+        var createResponse = rest.exchange(baseUrl() + "/api/campaigns", HttpMethod.POST,
+                new HttpEntity<>(new CampaignCreateRequest(title, "Campaign description",
+                        LocalDate.now().minusDays(1), LocalDate.now().plusDays(30), new BigDecimal("100.00")),
+                        authHeaders(businessAuth.accessToken())),
+                CampaignResponse.class);
+        Long campaignId = createResponse.getBody().id();
+
+        rest.exchange(baseUrl() + "/api/campaigns/" + campaignId, HttpMethod.PUT,
+                new HttpEntity<>(new CampaignUpdateRequest(title, "Campaign description",
+                        LocalDate.now().minusDays(1), LocalDate.now().plusDays(30), new BigDecimal("100.00"), CampaignStatus.ACTIVE),
+                        authHeaders(businessAuth.accessToken())),
+                CampaignResponse.class);
+        return campaignId;
+    }
+
     @Test
     void publishSyncAndLeaderboard_fullFlow() {
         AuthResponse creatorAuth = registerAndLogin("creator3@test.com", UserRole.CREATOR, "Jordan Creator");
         AuthResponse businessAuth = registerAndLogin("business3@test.com", UserRole.BUSINESS, "Gamma Co");
         Long businessId = businessAuth.user().id();
+        Long campaignId = createActiveCampaign(businessAuth, "Gamma Launch");
 
         var applyResponse = rest.exchange(baseUrl() + "/api/applications", HttpMethod.POST,
-                new HttpEntity<>(new ApplicationCreateRequest(businessId, "Pitch message"),
+                new HttpEntity<>(new ApplicationCreateRequest(campaignId, "Pitch message"),
                         authHeaders(creatorAuth.accessToken())),
                 ApplicationResponse.class);
         Long applicationId = applyResponse.getBody().id();

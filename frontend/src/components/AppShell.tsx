@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { useAuth } from "@/auth/AuthContext";
 import { Avatar } from "./Avatar";
 import { Button } from "./Button";
-import { CompassIcon, InboxIcon, ImageStackIcon, UserIcon, LogoutIcon, TrophyIcon } from "./icons";
+import { CompassIcon, InboxIcon, ImageStackIcon, UserIcon, LogoutIcon, TrophyIcon, MegaphoneIcon, IdCardIcon } from "./icons";
 
 interface NavItem {
   to: string;
@@ -16,6 +16,7 @@ function navItemsForRole(role: string | undefined): NavItem[] {
   if (role === "BUSINESS") {
     return [
       { to: "/", label: "Discover", icon: CompassIcon },
+      { to: "/business/campaigns", label: "My campaigns", icon: MegaphoneIcon },
       { to: "/business/applications", label: "Applications", icon: InboxIcon },
       { to: "/business/content", label: "Review queue", icon: ImageStackIcon },
       { to: "/business/leaderboard", label: "Leaderboard", icon: TrophyIcon },
@@ -28,6 +29,7 @@ function navItemsForRole(role: string | undefined): NavItem[] {
       { to: "/creator/applications", label: "My applications", icon: InboxIcon },
       { to: "/creator/content", label: "My submissions", icon: ImageStackIcon },
       { to: "/leaderboard", label: "Leaderboard", icon: TrophyIcon },
+      { to: "/creator/kyc", label: "My KYC", icon: IdCardIcon },
       { to: "/creator/profile", label: "My profile", icon: UserIcon },
     ];
   }

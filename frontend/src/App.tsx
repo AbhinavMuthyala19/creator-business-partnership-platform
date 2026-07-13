@@ -2,17 +2,19 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ProtectedRoute } from "@/auth/ProtectedRoute";
 import { useAuth } from "@/auth/AuthContext";
-import { DiscoverBusinessesPage } from "@/pages/DiscoverBusinessesPage";
-import { BusinessDetailPage } from "@/pages/BusinessDetailPage";
+import { DiscoverCampaignsPage } from "@/pages/DiscoverCampaignsPage";
+import { CampaignDetailPage } from "@/pages/CampaignDetailPage";
 import { LoginPage } from "@/pages/LoginPage";
 import { RegisterPage } from "@/pages/RegisterPage";
 import { CreatorApplicationsPage } from "@/pages/creator/CreatorApplicationsPage";
 import { CreatorContentPage } from "@/pages/creator/CreatorContentPage";
 import { CreatorProfilePage } from "@/pages/creator/CreatorProfilePage";
+import { CreatorKycPage } from "@/pages/creator/CreatorKycPage";
 import { BusinessApplicationsInboxPage } from "@/pages/business/BusinessApplicationsInboxPage";
 import { BusinessContentReviewPage } from "@/pages/business/BusinessContentReviewPage";
 import { BusinessProfilePage } from "@/pages/business/BusinessProfilePage";
 import { BusinessLeaderboardPage } from "@/pages/business/BusinessLeaderboardPage";
+import { BusinessCampaignsPage } from "@/pages/business/BusinessCampaignsPage";
 import { LeaderboardPage } from "@/pages/LeaderboardPage";
 
 export default function App() {
@@ -29,18 +31,19 @@ export default function App() {
         path="/"
         element={
           <AppShell>
-            <DiscoverBusinessesPage />
+            <DiscoverCampaignsPage />
           </AppShell>
         }
       />
       <Route
-        path="/businesses/:id"
+        path="/campaigns/:id"
         element={
           <AppShell>
-            <BusinessDetailPage />
+            <CampaignDetailPage />
           </AppShell>
         }
       />
+      <Route path="/businesses/:id" element={<Navigate to="/" replace />} />
 
       <Route
         path="/creator/applications"
@@ -72,6 +75,16 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/creator/kyc"
+        element={
+          <ProtectedRoute allowedRoles={["CREATOR"]}>
+            <AppShell>
+              <CreatorKycPage />
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path="/business/applications"
@@ -89,6 +102,16 @@ export default function App() {
           <ProtectedRoute allowedRoles={["BUSINESS"]}>
             <AppShell>
               <BusinessContentReviewPage />
+            </AppShell>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/business/campaigns"
+        element={
+          <ProtectedRoute allowedRoles={["BUSINESS"]}>
+            <AppShell>
+              <BusinessCampaignsPage />
             </AppShell>
           </ProtectedRoute>
         }

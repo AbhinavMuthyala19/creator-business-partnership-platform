@@ -2,7 +2,7 @@ import { apiClient } from "./client";
 import type { ApplicationRecord, ApplicationStatus, PageResponse } from "@/types";
 
 export interface CreateApplicationPayload {
-  businessId: number;
+  campaignId: number;
   pitchMessage: string;
 }
 
@@ -18,9 +18,9 @@ export const applicationsApi = {
     apiClient
       .get<PageResponse<ApplicationRecord>>("/applications/me", { params: { page, size } })
       .then((r) => r.data),
-  inbox: (businessId: number, status?: ApplicationStatus, page = 0, size = 10) =>
+  inbox: (campaignId: number, status?: ApplicationStatus, page = 0, size = 10) =>
     apiClient
-      .get<PageResponse<ApplicationRecord>>(`/businesses/${businessId}/applications`, {
+      .get<PageResponse<ApplicationRecord>>(`/campaigns/${campaignId}/applications`, {
         params: { status, page, size },
       })
       .then((r) => r.data),

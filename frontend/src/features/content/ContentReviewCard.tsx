@@ -6,6 +6,7 @@ import { Button } from "@/components/Button";
 import { TextArea } from "@/components/Field";
 import { ReviewNotesTimeline } from "./ReviewNotesTimeline";
 import { ContentMetricsPanel } from "./ContentMetricsPanel";
+import { PayoutPanel } from "./PayoutPanel";
 import { contentApi } from "@/api/content";
 import { extractErrorMessage } from "@/api/client";
 import { useToast } from "@/components/Toast";
@@ -91,7 +92,12 @@ export function ContentReviewCard({ content }: { content: ContentRecord }) {
         </div>
       )}
 
-      {content.status === "PUBLISHED" && <ContentMetricsPanel content={content} />}
+      {content.status === "PUBLISHED" && (
+        <>
+          <ContentMetricsPanel content={content} />
+          <PayoutPanel content={content} />
+        </>
+      )}
 
       <div className="border-t border-ink-100 pt-4">
         <ReviewNotesTimeline notes={content.reviewNotes} />

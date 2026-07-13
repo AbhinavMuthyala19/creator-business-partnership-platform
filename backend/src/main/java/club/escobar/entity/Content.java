@@ -16,6 +16,7 @@ import java.util.List;
         @Index(name = "idx_content_application", columnList = "application_id"),
         @Index(name = "idx_content_creator", columnList = "creator_id"),
         @Index(name = "idx_content_business", columnList = "business_id"),
+        @Index(name = "idx_content_campaign", columnList = "campaign_id"),
         @Index(name = "idx_content_status", columnList = "status")
 })
 @Getter
@@ -41,6 +42,11 @@ public class Content {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "business_id", nullable = false)
     private User business;
+
+    // Denormalized for query simplicity, same rationale as creator/business above.
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "campaign_id", nullable = false)
+    private Campaign campaign;
 
     @Column(columnDefinition = "TEXT")
     private String caption;

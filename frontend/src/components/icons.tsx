@@ -66,3 +66,21 @@ export const TrophyIcon = (props: SVGProps<SVGSVGElement>) => (
     <path d="M10 17h4v3h-4z" />
   </svg>
 );
+
+export const MegaphoneIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...base(props)}>
+    <path d="M3 11v2a2 2 0 0 0 2 2h1l2 5" />
+    <path d="M6 15h3l8.5 4V5L9 9H6a3 3 0 0 0 0 6z" />
+    <path d="M18.5 9.5a3.5 3.5 0 0 1 0 5" />
+  </svg>
+);
+
+export const IdCardIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...base(props)}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <circle cx="8.5" cy="11" r="1.8" />
+    <path d="M5.5 16c.6-1.6 1.9-2.4 3-2.4s2.4.8 3 2.4" />
+    <path d="M14.5 9.5h4" />
+    <path d="M14.5 12.5h4" />
+  </svg>
+);

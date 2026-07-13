@@ -5,6 +5,7 @@ import club.escobar.dto.application.ApplicationResponse;
 import club.escobar.dto.application.ApplicationStatusUpdateRequest;
 import club.escobar.dto.common.PageResponse;
 import club.escobar.entity.Application;
+import club.escobar.entity.Campaign;
 import club.escobar.entity.User;
 import club.escobar.entity.enums.ApplicationStatus;
 import club.escobar.entity.enums.UserRole;
@@ -14,6 +15,7 @@ import club.escobar.exception.InvalidStateTransitionException;
 import club.escobar.exception.ResourceNotFoundException;
 import club.escobar.mapper.ApplicationMapper;
 import club.escobar.repository.ApplicationRepository;
+import club.escobar.repository.CampaignRepository;
 import club.escobar.repository.UserRepository;
 import club.escobar.service.ApplicationService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,7 @@ public class ApplicationServiceImpl implements ApplicationService {
     private static final Logger log = LoggerFactory.getLogger(ApplicationServiceImpl.class);
 
     private final ApplicationRepository applicationRepository;
+    private final CampaignRepository campaignRepository;
     private final UserRepository userRepository;
     private final ApplicationMapper applicationMapper;
 
@@ -45,24 +48,25 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new ForbiddenActionException("Only creators can submit applications");
         }
 
-        User business = userRepository.findById(request.businessId())
-                .orElseThrow(() -> new ResourceNotFoundException("Business not found with id " + request.businessId()));
-        if (business.getRole() != UserRole.BUSINESS) {
-            throw new ResourceNotFoundException("Business not found with id " + request.businessId());
+        Campaign campaign = campaignRepository.findById(request.campaignId())
+                .orElseThrow(() -> new ResourceNotFoundException("Campaign not found with id " + request.campaignId()));
+        if (!campaign.isAcceptingApplications()) {
+            throw new InvalidStateTransitionException(
+                    "This campaign is not currently accepting applications (status: " + campaign.getStatus() + ")");
         }
 
-        if (applicationRepository.findByCreator_IdAndBusiness_Id(creator.getId(), business.getId()).isPresent()) {
-            throw new DuplicateResourceException("You have already applied to this business");
+        if (applicationRepository.findByCreator_IdAndCampaign_Id(creator.getId(), campaign.getId()).isPresent()) {
+            throw new DuplicateResourceException("You have already applied to this campaign");
         }
 
         Application application = applicationRepository.save(Application.builder()
                 .creator(creator)
-                .business(business)
+                .campaign(campaign)
                 .pitchMessage(request.pitchMessage())
                 .status(ApplicationStatus.PENDING)
                 .build());
 
-        log.info("Creator id={} applied to business id={} (application id={})", creator.getId(), business.getId(), application.getId());
+        log.info("Creator id={} applied to campaign id={} (application id={})", creator.getId(), campaign.getId(), application.getId());
         return applicationMapper.toResponse(application);
     }
 
@@ -76,15 +80,17 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ApplicationResponse> listForBusiness(Long requestingUserId, Long businessId,
+    public PageResponse<ApplicationResponse> listForCampaign(Long requestingUserId, Long campaignId,
                                                               ApplicationStatus status, Pageable pageable) {
-        if (!requestingUserId.equals(businessId)) {
-            throw new ForbiddenActionException("You may only view your own application inbox");
+        Campaign campaign = campaignRepository.findById(campaignId)
+                .orElseThrow(() -> new ResourceNotFoundException("Campaign not found with id " + campaignId));
+        if (!campaign.getBusiness().getId().equals(requestingUserId)) {
+            throw new ForbiddenActionException("You may only view applications for your own campaign");
         }
 
         Page<Application> page = status != null
-                ? applicationRepository.findByBusiness_IdAndStatus(businessId, status, pageable)
-                : applicationRepository.findByBusiness_Id(businessId, pageable);
+                ? applicationRepository.findByCampaign_IdAndStatus(campaignId, status, pageable)
+                : applicationRepository.findByCampaign_Id(campaignId, pageable);
 
         return PageResponse.of(page.map(applicationMapper::toResponse));
     }
@@ -95,7 +101,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new ResourceNotFoundException("Application not found with id " + applicationId));
 
-        if (!application.getBusiness().getId().equals(businessUserId)) {
+        if (!application.getCampaign().getBusiness().getId().equals(businessUserId)) {
             throw new ForbiddenActionException("You may only review applications submitted to your own business");
         }
         if (application.getStatus() != ApplicationStatus.PENDING) {

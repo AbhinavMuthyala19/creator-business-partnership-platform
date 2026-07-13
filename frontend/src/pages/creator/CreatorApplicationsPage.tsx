@@ -28,10 +28,10 @@ export function CreatorApplicationsPage() {
         <EmptyState
           icon={<InboxIcon className="h-10 w-10" />}
           title="No applications yet"
-          description="Browse businesses and submit a pitch to get started."
+          description="Browse campaigns and submit a pitch to get started."
           action={
             <Link to="/">
-              <Button size="sm">Discover businesses</Button>
+              <Button size="sm">Discover campaigns</Button>
             </Link>
           }
         />
@@ -40,9 +40,10 @@ export function CreatorApplicationsPage() {
           {data.content.map((app) => (
             <div key={app.id} className="card-surface flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
-                <Link to={`/businesses/${app.businessId}`} className="font-display text-base font-semibold text-ink-900 hover:text-signal-700">
-                  {app.businessCompanyName}
+                <Link to={`/campaigns/${app.campaignId}`} className="font-display text-base font-semibold text-ink-900 hover:text-signal-700">
+                  {app.campaignTitle}
                 </Link>
+                <p className="text-xs text-ink-400">{app.businessCompanyName}</p>
                 <p className="mt-1 line-clamp-2 text-sm text-ink-500">{app.pitchMessage}</p>
                 {app.reviewNote && (
                   <p className="mt-2 rounded-md bg-paper-100 px-2.5 py-1.5 text-xs text-ink-500">

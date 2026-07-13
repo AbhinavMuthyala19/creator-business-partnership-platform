@@ -39,14 +39,14 @@ public class ApplicationController {
         return ResponseEntity.ok(applicationService.listForCreator(user.getId(), pageable));
     }
 
-    @GetMapping("/api/businesses/{id}/applications")
+    @GetMapping("/api/campaigns/{id}/applications")
     @PreAuthorize("hasRole('BUSINESS')")
     public ResponseEntity<PageResponse<ApplicationResponse>> inbox(
             @AuthenticationPrincipal SecurityUser user,
             @PathVariable Long id,
             @RequestParam(required = false) ApplicationStatus status,
             @PageableDefault(size = 10) Pageable pageable) {
-        return ResponseEntity.ok(applicationService.listForBusiness(user.getId(), id, status, pageable));
+        return ResponseEntity.ok(applicationService.listForCampaign(user.getId(), id, status, pageable));
     }
 
     @PatchMapping("/api/applications/{id}/status")

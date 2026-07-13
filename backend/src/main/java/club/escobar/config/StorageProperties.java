@@ -10,6 +10,7 @@ public record StorageProperties(
         String baseUrl,
         long maxFileSizeBytes,
         List<String> allowedImageTypes,
-        List<String> allowedVideoTypes
+        List<String> allowedVideoTypes,
+        List<String> allowedDocumentTypes
 ) {
 }

@@ -61,7 +61,7 @@ class ContentControllerTest {
     }
 
     private ContentResponse sampleResponse(ContentStatus status) {
-        return new ContentResponse(20L, 5L, 1L, "Jamie", 2L, "Acme",
+        return new ContentResponse(20L, 5L, 1L, "Jamie", 3L, "Summer Launch", 2L, "Acme",
                 "caption", "media.png", MediaType.IMAGE, "https://www.instagram.com/p/Cabc123/",
                 status, 1, List.of(), Instant.now(), Instant.now(), Instant.now(),
                 status == ContentStatus.PUBLISHED ? Instant.now() : null);

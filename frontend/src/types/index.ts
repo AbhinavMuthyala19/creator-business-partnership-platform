@@ -6,6 +6,12 @@ export type ContentStatus = "DRAFT" | "SUBMITTED" | "CHANGES_REQUESTED" | "APPRO
 
 export type MediaType = "IMAGE" | "VIDEO";
 
+export type CampaignStatus = "DRAFT" | "ACTIVE" | "CLOSED";
+
+export type KycStatus = "PENDING" | "VERIFIED" | "REJECTED";
+
+export type PayoutStatus = "BELOW_THRESHOLD" | "PENDING_KYC" | "PAYABLE" | "PAID";
+
 export interface UserSummary {
   id: number;
   email: string;
@@ -42,10 +48,27 @@ export interface BusinessProfile {
   createdAt: string;
 }
 
+export interface Campaign {
+  id: number;
+  businessId: number;
+  businessCompanyName: string;
+  title: string;
+  description: string | null;
+  startDate: string;
+  endDate: string;
+  ratePerThousandViewsInr: number;
+  status: CampaignStatus;
+  acceptingApplications: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ApplicationRecord {
   id: number;
   creatorId: number;
   creatorDisplayName: string;
+  campaignId: number;
+  campaignTitle: string;
   businessId: number;
   businessCompanyName: string;
   pitchMessage: string;
@@ -69,6 +92,8 @@ export interface ContentRecord {
   applicationId: number;
   creatorId: number;
   creatorDisplayName: string;
+  campaignId: number;
+  campaignTitle: string;
   businessId: number;
   businessCompanyName: string;
   caption: string | null;
@@ -91,6 +116,42 @@ export interface ContentMetricsSnapshot {
   commentCount: number;
   viewCount: number | null;
   fetchedAt: string;
+}
+
+export interface CreatorKycProfile {
+  creatorId: number;
+  panNumberMasked: string;
+  nameOnPan: string;
+  documentUrl: string;
+  status: KycStatus;
+  reviewNote: string | null;
+  reviewedAt: string | null;
+}
+
+export interface CreatorKycReviewDetail {
+  creatorId: number;
+  panNumber: string;
+  nameOnPan: string;
+  documentUrl: string;
+  status: KycStatus;
+  reviewNote: string | null;
+  reviewedAt: string | null;
+}
+
+export interface Payout {
+  id: number;
+  contentId: number;
+  creatorId: number;
+  campaignId: number;
+  businessId: number;
+  viewCountUsed: number;
+  rateUsed: number;
+  amountInr: number;
+  status: PayoutStatus;
+  calculatedAt: string;
+  eligibleAt: string | null;
+  paidAt: string | null;
+  paidNote: string | null;
 }
 
 export interface LeaderboardEntry {

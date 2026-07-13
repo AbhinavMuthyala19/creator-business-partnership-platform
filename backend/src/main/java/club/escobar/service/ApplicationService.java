@@ -13,7 +13,7 @@ public interface ApplicationService {
 
     PageResponse<ApplicationResponse> listForCreator(Long creatorUserId, Pageable pageable);
 
-    PageResponse<ApplicationResponse> listForBusiness(Long requestingUserId, Long businessId,
+    PageResponse<ApplicationResponse> listForCampaign(Long requestingUserId, Long campaignId,
                                                        ApplicationStatus status, Pageable pageable);
 
     ApplicationResponse updateStatus(Long businessUserId, Long applicationId, ApplicationStatusUpdateRequest request);

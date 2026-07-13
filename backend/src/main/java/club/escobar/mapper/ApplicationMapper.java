@@ -10,7 +10,9 @@ public interface ApplicationMapper {
 
     @Mapping(target = "creatorId", source = "creator.id")
     @Mapping(target = "creatorDisplayName", source = "creator.creatorProfile.displayName")
-    @Mapping(target = "businessId", source = "business.id")
-    @Mapping(target = "businessCompanyName", source = "business.businessProfile.companyName")
+    @Mapping(target = "campaignId", source = "campaign.id")
+    @Mapping(target = "campaignTitle", source = "campaign.title")
+    @Mapping(target = "businessId", source = "campaign.business.id")
+    @Mapping(target = "businessCompanyName", source = "campaign.business.businessProfile.companyName")
     ApplicationResponse toResponse(Application entity);
 }

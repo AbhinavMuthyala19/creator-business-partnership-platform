@@ -9,6 +9,7 @@ import { applicationsApi } from "@/api/applications";
 import { extractErrorMessage } from "@/api/client";
 import { useToast } from "@/components/Toast";
 import { CreatorProfileInline } from "./CreatorProfileInline";
+import { KycReviewPanel } from "@/features/kyc/KycReviewPanel";
 
 export function ApplicationInboxRow({ application }: { application: ApplicationRecord }) {
   const [expanded, setExpanded] = useState(false);
@@ -46,8 +47,9 @@ export function ApplicationInboxRow({ application }: { application: ApplicationR
       </div>
 
       {expanded && (
-        <div className="mt-4">
+        <div className="mt-4 flex flex-col gap-4">
           <CreatorProfileInline creatorId={application.creatorId} />
+          <KycReviewPanel creatorId={application.creatorId} />
         </div>
       )}
 

@@ -18,6 +18,7 @@ import club.escobar.repository.ContentMetricsSnapshotRepository;
 import club.escobar.repository.ContentRepository;
 import club.escobar.repository.LeaderboardRow;
 import club.escobar.service.ContentMetricsService;
+import club.escobar.service.PayoutService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ public class ContentMetricsServiceImpl implements ContentMetricsService {
     private final ApifyInstagramClient apifyInstagramClient;
     private final MetricsSyncProperties metricsSyncProperties;
     private final ContentMetricsMapper contentMetricsMapper;
+    private final PayoutService payoutService;
 
     @Override
     @Transactional
@@ -79,6 +81,7 @@ public class ContentMetricsServiceImpl implements ContentMetricsService {
                 .build();
         content.addMetricsSnapshot(snapshot);
         contentRepository.save(content);
+        payoutService.recalculate(contentId);
 
         log.info("User id={} synced metrics for content id={}: likes={} comments={} views={}",
                 requestingUserId, contentId, metrics.likeCount(), metrics.commentCount(), metrics.viewCount());

@@ -4,10 +4,12 @@ import club.escobar.config.MetricsSyncProperties;
 import club.escobar.dto.metrics.ContentMetricsSnapshotResponse;
 import club.escobar.dto.metrics.LeaderboardEntryResponse;
 import club.escobar.entity.Application;
+import club.escobar.entity.Campaign;
 import club.escobar.entity.Content;
 import club.escobar.entity.ContentMetricsSnapshot;
 import club.escobar.entity.User;
 import club.escobar.entity.enums.ApplicationStatus;
+import club.escobar.entity.enums.CampaignStatus;
 import club.escobar.entity.enums.ContentStatus;
 import club.escobar.entity.enums.MediaType;
 import club.escobar.entity.enums.UserRole;
@@ -30,7 +32,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -51,11 +55,14 @@ class ContentMetricsServiceImplTest {
     private ApifyInstagramClient apifyInstagramClient;
     @Mock
     private ContentMetricsMapper contentMetricsMapper;
+    @Mock
+    private PayoutService payoutService;
 
     private ContentMetricsServiceImpl service;
 
     private User creator;
     private User business;
+    private Campaign campaign;
     private Application application;
     private Content publishedContent;
 
@@ -63,13 +70,18 @@ class ContentMetricsServiceImplTest {
     void setUp() {
         MetricsSyncProperties properties = new MetricsSyncProperties(15);
         service = new ContentMetricsServiceImpl(contentRepository, contentMetricsSnapshotRepository,
-                apifyInstagramClient, properties, contentMetricsMapper);
+                apifyInstagramClient, properties, contentMetricsMapper, payoutService);
 
         creator = User.builder().id(1L).email("creator@test.com").role(UserRole.CREATOR).build();
         business = User.builder().id(2L).email("business@test.com").role(UserRole.BUSINESS).build();
-        application = Application.builder().id(5L).creator(creator).business(business)
+        campaign = Campaign.builder()
+                .id(3L).business(business).title("Summer Launch")
+                .startDate(LocalDate.now().minusDays(1)).endDate(LocalDate.now().plusDays(30))
+                .ratePerThousandViewsInr(new BigDecimal("100.00")).status(CampaignStatus.ACTIVE)
+                .build();
+        application = Application.builder().id(5L).creator(creator).campaign(campaign)
                 .status(ApplicationStatus.APPROVED).pitchMessage("pitch").build();
-        publishedContent = Content.builder().id(20L).application(application).creator(creator).business(business)
+        publishedContent = Content.builder().id(20L).application(application).creator(creator).campaign(campaign).business(business)
                 .mediaUrl("post.png").mediaType(MediaType.IMAGE).status(ContentStatus.PUBLISHED)
                 .postUrl("https://www.instagram.com/p/Cabc123/").version(1).build();
     }
@@ -87,6 +99,7 @@ class ContentMetricsServiceImplTest {
 
         assertThat(publishedContent.getMetricsSnapshots()).hasSize(1);
         assertThat(publishedContent.getMetricsSnapshots().get(0).getViewCount()).isEqualTo(100L);
+        verify(payoutService).recalculate(20L);
     }
 
     @Test
@@ -102,6 +115,7 @@ class ContentMetricsServiceImplTest {
 
         assertThat(publishedContent.getMetricsSnapshots()).hasSize(1);
         assertThat(publishedContent.getMetricsSnapshots().get(0).getViewCount()).isNull();
+        verify(payoutService).recalculate(20L);
     }
 
     @Test
@@ -147,6 +161,7 @@ class ContentMetricsServiceImplTest {
         service.syncMetrics(1L, 20L);
 
         verify(apifyInstagramClient).fetchPostMetrics(publishedContent.getPostUrl());
+        verify(payoutService).recalculate(20L);
     }
 
     @Test

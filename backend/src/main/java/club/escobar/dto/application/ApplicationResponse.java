@@ -8,6 +8,8 @@ public record ApplicationResponse(
         Long id,
         Long creatorId,
         String creatorDisplayName,
+        Long campaignId,
+        String campaignTitle,
         Long businessId,
         String businessCompanyName,
         String pitchMessage,

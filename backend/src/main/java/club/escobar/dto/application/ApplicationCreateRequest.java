@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record ApplicationCreateRequest(
-        @NotNull Long businessId,
+        @NotNull Long campaignId,
         @NotBlank @Size(max = 4000) String pitchMessage
 ) {
 }

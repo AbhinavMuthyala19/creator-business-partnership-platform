@@ -5,11 +5,15 @@ import club.escobar.dto.application.ApplicationResponse;
 import club.escobar.dto.application.ApplicationStatusUpdateRequest;
 import club.escobar.dto.auth.AuthResponse;
 import club.escobar.dto.auth.RegisterRequest;
+import club.escobar.dto.campaign.CampaignCreateRequest;
+import club.escobar.dto.campaign.CampaignResponse;
+import club.escobar.dto.campaign.CampaignUpdateRequest;
 import club.escobar.dto.content.ContentCreateRequest;
 import club.escobar.dto.content.ContentResponse;
 import club.escobar.dto.content.ContentReviewRequest;
 import club.escobar.dto.content.ContentUpdateRequest;
 import club.escobar.entity.enums.ApplicationStatus;
+import club.escobar.entity.enums.CampaignStatus;
 import club.escobar.entity.enums.ContentStatus;
 import club.escobar.entity.enums.MediaType;
 import club.escobar.entity.enums.UserRole;
@@ -20,6 +24,9 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,15 +54,33 @@ class ApplicationAndContentFlowIntegrationTest extends AbstractIntegrationTest {
         return headers;
     }
 
+    private Long createActiveCampaign(AuthResponse businessAuth, String title) {
+        var createResponse = rest.exchange(baseUrl() + "/api/campaigns", HttpMethod.POST,
+                new HttpEntity<>(new CampaignCreateRequest(title, "Campaign description",
+                        LocalDate.now().minusDays(1), LocalDate.now().plusDays(30), new BigDecimal("100.00")),
+                        authHeaders(businessAuth.accessToken())),
+                CampaignResponse.class);
+        assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        Long campaignId = createResponse.getBody().id();
+
+        var activateResponse = rest.exchange(baseUrl() + "/api/campaigns/" + campaignId, HttpMethod.PUT,
+                new HttpEntity<>(new CampaignUpdateRequest(title, "Campaign description",
+                        LocalDate.now().minusDays(1), LocalDate.now().plusDays(30), new BigDecimal("100.00"), CampaignStatus.ACTIVE),
+                        authHeaders(businessAuth.accessToken())),
+                CampaignResponse.class);
+        assertThat(activateResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        return campaignId;
+    }
+
     @Test
     void fullLifecycle_fromApplicationToApprovedContent_withChangeRequestRoundTrip() {
         AuthResponse creatorAuth = registerAndLogin("creator1@test.com", UserRole.CREATOR, "Jamie Creator");
         AuthResponse businessAuth = registerAndLogin("business1@test.com", UserRole.BUSINESS, "Acme Co");
-        Long businessId = businessAuth.user().id();
+        Long campaignId = createActiveCampaign(businessAuth, "Acme Summer Launch");
 
-        // 1. Creator applies to business
+        // 1. Creator applies to the campaign
         var applyResponse = rest.exchange(baseUrl() + "/api/applications", HttpMethod.POST,
-                new HttpEntity<>(new ApplicationCreateRequest(businessId, "I would love to promote your brand"),
+                new HttpEntity<>(new ApplicationCreateRequest(campaignId, "I would love to promote your brand"),
                         authHeaders(creatorAuth.accessToken())),
                 ApplicationResponse.class);
         assertThat(applyResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -114,10 +139,10 @@ class ApplicationAndContentFlowIntegrationTest extends AbstractIntegrationTest {
     void submittingContent_forUnapprovedApplication_isRejected() {
         AuthResponse creatorAuth = registerAndLogin("creator2@test.com", UserRole.CREATOR, "Alex Creator");
         AuthResponse businessAuth = registerAndLogin("business2@test.com", UserRole.BUSINESS, "Beta Co");
-        Long businessId = businessAuth.user().id();
+        Long campaignId = createActiveCampaign(businessAuth, "Beta Launch");
 
         var applyResponse = rest.exchange(baseUrl() + "/api/applications", HttpMethod.POST,
-                new HttpEntity<>(new ApplicationCreateRequest(businessId, "Pitch message"),
+                new HttpEntity<>(new ApplicationCreateRequest(campaignId, "Pitch message"),
                         authHeaders(creatorAuth.accessToken())),
                 ApplicationResponse.class);
         Long applicationId = applyResponse.getBody().id();

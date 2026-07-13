@@ -12,11 +12,13 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
 
     Page<Application> findByCreator_Id(Long creatorId, Pageable pageable);
 
-    Page<Application> findByBusiness_IdAndStatus(Long businessId, ApplicationStatus status, Pageable pageable);
+    Page<Application> findByCampaign_IdAndStatus(Long campaignId, ApplicationStatus status, Pageable pageable);
 
-    Page<Application> findByBusiness_Id(Long businessId, Pageable pageable);
+    Page<Application> findByCampaign_Id(Long campaignId, Pageable pageable);
 
-    Optional<Application> findByCreator_IdAndBusiness_Id(Long creatorId, Long businessId);
+    Optional<Application> findByCreator_IdAndCampaign_Id(Long creatorId, Long campaignId);
 
-    boolean existsByCreator_IdAndBusiness_IdAndStatus(Long creatorId, Long businessId, ApplicationStatus status);
+    boolean existsByCreator_IdAndCampaign_IdAndStatus(Long creatorId, Long campaignId, ApplicationStatus status);
+
+    boolean existsByCreator_IdAndCampaign_Business_Id(Long creatorId, Long businessId);
 }

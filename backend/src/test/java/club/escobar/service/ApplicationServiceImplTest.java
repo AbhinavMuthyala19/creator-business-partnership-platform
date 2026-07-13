@@ -4,8 +4,10 @@ import club.escobar.dto.application.ApplicationCreateRequest;
 import club.escobar.dto.application.ApplicationResponse;
 import club.escobar.dto.application.ApplicationStatusUpdateRequest;
 import club.escobar.entity.Application;
+import club.escobar.entity.Campaign;
 import club.escobar.entity.User;
 import club.escobar.entity.enums.ApplicationStatus;
+import club.escobar.entity.enums.CampaignStatus;
 import club.escobar.entity.enums.UserRole;
 import club.escobar.exception.DuplicateResourceException;
 import club.escobar.exception.ForbiddenActionException;
@@ -13,6 +15,7 @@ import club.escobar.exception.InvalidStateTransitionException;
 import club.escobar.exception.ResourceNotFoundException;
 import club.escobar.mapper.ApplicationMapper;
 import club.escobar.repository.ApplicationRepository;
+import club.escobar.repository.CampaignRepository;
 import club.escobar.repository.UserRepository;
 import club.escobar.service.impl.ApplicationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +25,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +40,8 @@ class ApplicationServiceImplTest {
     @Mock
     private ApplicationRepository applicationRepository;
     @Mock
+    private CampaignRepository campaignRepository;
+    @Mock
     private UserRepository userRepository;
     @Mock
     private ApplicationMapper applicationMapper;
@@ -44,18 +51,24 @@ class ApplicationServiceImplTest {
 
     private User creator;
     private User business;
+    private Campaign campaign;
 
     @BeforeEach
     void setUp() {
         creator = User.builder().id(1L).email("creator@test.com").role(UserRole.CREATOR).active(true).build();
         business = User.builder().id(2L).email("business@test.com").role(UserRole.BUSINESS).active(true).build();
+        campaign = Campaign.builder()
+                .id(2L).business(business).title("Summer Launch")
+                .startDate(LocalDate.now().minusDays(1)).endDate(LocalDate.now().plusDays(30))
+                .ratePerThousandViewsInr(new BigDecimal("100.00")).status(CampaignStatus.ACTIVE)
+                .build();
     }
 
     @Test
     void create_savesPendingApplication_whenNoneExists() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(creator));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(business));
-        when(applicationRepository.findByCreator_IdAndBusiness_Id(1L, 2L)).thenReturn(Optional.empty());
+        when(campaignRepository.findById(2L)).thenReturn(Optional.of(campaign));
+        when(applicationRepository.findByCreator_IdAndCampaign_Id(1L, 2L)).thenReturn(Optional.empty());
         when(applicationRepository.save(any(Application.class))).thenAnswer(inv -> inv.getArgument(0));
         when(applicationMapper.toResponse(any())).thenReturn(mock(ApplicationResponse.class));
 
@@ -65,14 +78,14 @@ class ApplicationServiceImplTest {
         verify(applicationRepository).save(captor.capture());
         assertThat(captor.getValue().getStatus()).isEqualTo(ApplicationStatus.PENDING);
         assertThat(captor.getValue().getCreator()).isEqualTo(creator);
-        assertThat(captor.getValue().getBusiness()).isEqualTo(business);
+        assertThat(captor.getValue().getCampaign()).isEqualTo(campaign);
     }
 
     @Test
     void create_rejectsDuplicateApplication() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(creator));
-        when(userRepository.findById(2L)).thenReturn(Optional.of(business));
-        when(applicationRepository.findByCreator_IdAndBusiness_Id(1L, 2L))
+        when(campaignRepository.findById(2L)).thenReturn(Optional.of(campaign));
+        when(applicationRepository.findByCreator_IdAndCampaign_Id(1L, 2L))
                 .thenReturn(Optional.of(new Application()));
 
         assertThatThrownBy(() -> applicationService.create(1L, new ApplicationCreateRequest(2L, "Hello")))
@@ -91,9 +104,19 @@ class ApplicationServiceImplTest {
     }
 
     @Test
+    void create_rejectsWhenCampaignNotAcceptingApplications() {
+        campaign.setStatus(CampaignStatus.DRAFT);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(creator));
+        when(campaignRepository.findById(2L)).thenReturn(Optional.of(campaign));
+
+        assertThatThrownBy(() -> applicationService.create(1L, new ApplicationCreateRequest(2L, "Hello")))
+                .isInstanceOf(InvalidStateTransitionException.class);
+    }
+
+    @Test
     void updateStatus_transitionsPendingToApproved() {
         Application application = Application.builder()
-                .id(10L).creator(creator).business(business).status(ApplicationStatus.PENDING)
+                .id(10L).creator(creator).campaign(campaign).status(ApplicationStatus.PENDING)
                 .pitchMessage("pitch").build();
         when(applicationRepository.findById(10L)).thenReturn(Optional.of(application));
         when(applicationRepository.save(any(Application.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -109,7 +132,7 @@ class ApplicationServiceImplTest {
     @Test
     void updateStatus_rejectsWhenAlreadyDecided() {
         Application application = Application.builder()
-                .id(10L).creator(creator).business(business).status(ApplicationStatus.APPROVED)
+                .id(10L).creator(creator).campaign(campaign).status(ApplicationStatus.APPROVED)
                 .pitchMessage("pitch").build();
         when(applicationRepository.findById(10L)).thenReturn(Optional.of(application));
 
@@ -121,7 +144,7 @@ class ApplicationServiceImplTest {
     @Test
     void updateStatus_rejectsWhenNotOwningBusiness() {
         Application application = Application.builder()
-                .id(10L).creator(creator).business(business).status(ApplicationStatus.PENDING)
+                .id(10L).creator(creator).campaign(campaign).status(ApplicationStatus.PENDING)
                 .pitchMessage("pitch").build();
         when(applicationRepository.findById(10L)).thenReturn(Optional.of(application));
 
@@ -131,9 +154,9 @@ class ApplicationServiceImplTest {
     }
 
     @Test
-    void create_throwsWhenBusinessNotFound() {
+    void create_throwsWhenCampaignNotFound() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(creator));
-        when(userRepository.findById(2L)).thenReturn(Optional.empty());
+        when(campaignRepository.findById(2L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> applicationService.create(1L, new ApplicationCreateRequest(2L, "Hello")))
                 .isInstanceOf(ResourceNotFoundException.class);

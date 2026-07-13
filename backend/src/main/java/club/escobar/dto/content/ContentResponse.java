@@ -11,6 +11,8 @@ public record ContentResponse(
         Long applicationId,
         Long creatorId,
         String creatorDisplayName,
+        Long campaignId,
+        String campaignTitle,
         Long businessId,
         String businessCompanyName,
         String caption,

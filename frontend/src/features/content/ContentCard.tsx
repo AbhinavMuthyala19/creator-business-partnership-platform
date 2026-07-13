@@ -8,6 +8,7 @@ import { MediaUploadField } from "./MediaUploadField";
 import { ReviewNotesTimeline } from "./ReviewNotesTimeline";
 import { PublishContentForm } from "./PublishContentForm";
 import { ContentMetricsPanel } from "./ContentMetricsPanel";
+import { PayoutPanel } from "./PayoutPanel";
 import { contentApi } from "@/api/content";
 import { extractErrorMessage } from "@/api/client";
 import { useToast } from "@/components/Toast";
@@ -83,7 +84,12 @@ export function ContentCard({ content }: { content: ContentRecord }) {
 
       {content.status === "APPROVED" && <PublishContentForm content={content} />}
 
-      {content.status === "PUBLISHED" && <ContentMetricsPanel content={content} />}
+      {content.status === "PUBLISHED" && (
+        <>
+          <ContentMetricsPanel content={content} />
+          <PayoutPanel content={content} />
+        </>
+      )}
 
       <div className="border-t border-ink-100 pt-4">
         <ReviewNotesTimeline notes={content.reviewNotes} />
