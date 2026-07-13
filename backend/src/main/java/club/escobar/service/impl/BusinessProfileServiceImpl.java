@@ -1,0 +1,77 @@
+package club.escobar.service.impl;
+
+import club.escobar.dto.business.BusinessProfileResponse;
+import club.escobar.dto.business.BusinessProfileUpdateRequest;
+import club.escobar.dto.common.PageResponse;
+import club.escobar.entity.BusinessProfile;
+import club.escobar.exception.ResourceNotFoundException;
+import club.escobar.mapper.BusinessProfileMapper;
+import club.escobar.repository.BusinessProfileRepository;
+import club.escobar.service.BusinessProfileService;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+@Service
+@RequiredArgsConstructor
+public class BusinessProfileServiceImpl implements BusinessProfileService {
+
+    private static final Logger log = LoggerFactory.getLogger(BusinessProfileServiceImpl.class);
+
+    private final BusinessProfileRepository businessProfileRepository;
+    private final BusinessProfileMapper businessProfileMapper;
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<BusinessProfileResponse> search(String search, String industry, Pageable pageable) {
+        String normalizedSearch = StringUtils.hasText(search) ? search.trim() : null;
+        String normalizedIndustry = StringUtils.hasText(industry) ? industry.trim() : null;
+
+        Page<BusinessProfileResponse> page = businessProfileRepository
+                .search(normalizedSearch, normalizedIndustry, pageable)
+                .map(businessProfileMapper::toResponse);
+
+        return PageResponse.of(page);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BusinessProfileResponse getById(Long id) {
+        return businessProfileMapper.toResponse(findById(id));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public BusinessProfileResponse getByUserId(Long userId) {
+        BusinessProfile profile = businessProfileRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Business profile not found for user id " + userId));
+        return businessProfileMapper.toResponse(profile);
+    }
+
+    @Override
+    @Transactional
+    public BusinessProfileResponse updateOwnProfile(Long userId, BusinessProfileUpdateRequest request) {
+        BusinessProfile profile = businessProfileRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Business profile not found for user id " + userId));
+
+        profile.setCompanyName(request.companyName());
+        profile.setIndustry(request.industry());
+        profile.setDescription(request.description());
+        profile.setLogoUrl(request.logoUrl());
+        profile.setWebsite(request.website());
+
+        BusinessProfile saved = businessProfileRepository.save(profile);
+        log.info("Business profile updated for user id={}", userId);
+        return businessProfileMapper.toResponse(saved);
+    }
+
+    private BusinessProfile findById(Long id) {
+        return businessProfileRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Business profile not found with id " + id));
+    }
+}

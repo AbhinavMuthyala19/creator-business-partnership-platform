@@ -1,0 +1,70 @@
+import { useQuery } from "@tanstack/react-query";
+import { creatorsApi } from "@/api/creators";
+import { Spinner } from "@/components/Spinner";
+import { TickMeter } from "@/components/TickMeter";
+
+export function CreatorProfileInline({ creatorId }: { creatorId: number }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["creator", creatorId],
+    queryFn: () => creatorsApi.getById(creatorId),
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-6">
+        <Spinner />
+      </div>
+    );
+  }
+  if (!data) return null;
+
+  return (
+    <div className="grid grid-cols-1 gap-5 border-t border-ink-100 pt-4 sm:grid-cols-2">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Bio</p>
+        <p className="mt-1 text-sm text-ink-600">{data.bio || "No bio provided."}</p>
+        {data.niche && (
+          <p className="mt-2 inline-block rounded-full bg-signal-50 px-2.5 py-1 text-xs font-medium text-signal-700">
+            {data.niche}
+          </p>
+        )}
+      </div>
+      <div className="flex flex-col gap-4">
+        <TickMeter
+          label={`${data.followerCount.toLocaleString()} followers (self-reported)`}
+          value={data.followerCount}
+          max={100000}
+          accent="gold"
+        />
+        {data.socialLinks.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Social handles</p>
+            <ul className="mt-1 flex flex-col gap-1">
+              {data.socialLinks.map((link) => (
+                <li key={link}>
+                  <a href={link} target="_blank" rel="noreferrer" className="text-sm text-signal-600 hover:underline">
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {data.portfolioLinks.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink-400">Portfolio</p>
+            <ul className="mt-1 flex flex-col gap-1">
+              {data.portfolioLinks.map((link) => (
+                <li key={link}>
+                  <a href={link} target="_blank" rel="noreferrer" className="text-sm text-signal-600 hover:underline">
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,22 @@
+package club.escobar.mapper;
+
+import club.escobar.dto.content.ContentReviewNoteResponse;
+import club.escobar.dto.content.ContentResponse;
+import club.escobar.entity.Content;
+import club.escobar.entity.ContentReviewNote;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+@Mapper(componentModel = "spring")
+public interface ContentMapper {
+
+    @Mapping(target = "applicationId", source = "application.id")
+    @Mapping(target = "creatorId", source = "creator.id")
+    @Mapping(target = "creatorDisplayName", source = "creator.creatorProfile.displayName")
+    @Mapping(target = "businessId", source = "business.id")
+    @Mapping(target = "businessCompanyName", source = "business.businessProfile.companyName")
+    ContentResponse toResponse(Content entity);
+
+    @Mapping(target = "authoredByUserId", source = "authoredBy.id")
+    ContentReviewNoteResponse toResponse(ContentReviewNote entity);
+}
