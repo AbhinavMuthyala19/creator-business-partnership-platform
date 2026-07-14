@@ -75,6 +75,18 @@ export const MegaphoneIcon = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+export const CheckIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...base(props)} strokeWidth={2}>
+    <path d="M5 12l5 5 9-10" />
+  </svg>
+);
+
+export const XIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg {...base(props)}>
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
+
 export const IdCardIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg {...base(props)}>
     <rect x="3" y="5" width="18" height="14" rx="2" />

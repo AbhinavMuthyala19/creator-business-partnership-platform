@@ -22,11 +22,11 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
           <p className="truncate text-xs uppercase tracking-wide text-ink-400">{campaign.businessCompanyName}</p>
         </div>
         {campaign.acceptingApplications ? (
-          <span className="shrink-0 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-700">
+          <span className="shrink-0 rounded-full bg-signal-soft px-2.5 py-1 font-mono text-xs font-semibold uppercase tracking-wide text-signal-deep">
             Open
           </span>
         ) : (
-          <span className="shrink-0 rounded-full bg-ink-100 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-ink-500">
+          <span className="shrink-0 rounded-full bg-ink-100 px-2.5 py-1 font-mono text-xs font-semibold uppercase tracking-wide text-ink-500">
             Closed
           </span>
         )}
@@ -34,9 +34,9 @@ export function CampaignCard({ campaign }: { campaign: Campaign }) {
 
       {campaign.description && <p className="line-clamp-3 text-sm text-ink-500">{campaign.description}</p>}
 
-      <div className="mt-auto flex items-center justify-between border-t border-ink-100 pt-3 text-xs text-ink-400">
+      <div className="mt-auto flex items-center justify-between border-t border-ink-100 pt-3 font-mono text-xs text-ink-400">
         <span>{formatDateRange(campaign.startDate, campaign.endDate)}</span>
-        <span className="font-semibold text-gold-700">
+        <span className="font-semibold text-gold-deep">
           {inrFormatter.format(campaign.ratePerThousandViewsInr)} / 1,000 views
         </span>
       </div>

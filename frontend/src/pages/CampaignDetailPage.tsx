@@ -65,28 +65,28 @@ export function CampaignDetailPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <div className="card-surface mb-6 flex items-start gap-5 p-7">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-signal-50 font-display text-2xl font-semibold text-signal-700">
+        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-signal-soft font-display text-2xl font-semibold text-signal-deep">
           {campaign.businessCompanyName[0]?.toUpperCase()}
         </div>
         <div className="min-w-0 flex-1">
           <h1 className="font-display text-2xl font-semibold text-ink-900">{campaign.title}</h1>
           <p className="text-sm uppercase tracking-wide text-ink-400">{campaign.businessCompanyName}</p>
-          <div className="mt-3 flex flex-wrap gap-4 text-sm text-ink-600">
+          <div className="mt-3 flex flex-wrap gap-4 font-mono text-sm text-ink-600">
             <span>
-              <span className="text-ink-400">Runs</span>{" "}
+              <span className="font-sans text-ink-400">Runs</span>{" "}
               {dateFormatter.format(new Date(campaign.startDate))} – {dateFormatter.format(new Date(campaign.endDate))}
             </span>
-            <span className="font-semibold text-gold-700">
+            <span className="font-semibold text-gold-deep">
               {inrFormatter.format(campaign.ratePerThousandViewsInr)} / 1,000 views
             </span>
           </div>
         </div>
         {campaign.acceptingApplications ? (
-          <span className="shrink-0 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-emerald-700">
+          <span className="shrink-0 rounded-full bg-signal-soft px-2.5 py-1 font-mono text-xs font-semibold uppercase tracking-wide text-signal-deep">
             Open
           </span>
         ) : (
-          <span className="shrink-0 rounded-full bg-ink-100 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-ink-500">
+          <span className="shrink-0 rounded-full bg-ink-100 px-2.5 py-1 font-mono text-xs font-semibold uppercase tracking-wide text-ink-500">
             Closed
           </span>
         )}
@@ -122,7 +122,7 @@ export function CampaignDetailPage() {
               className="flex flex-col gap-4"
             >
               {submitError && (
-                <div className="rounded-lg border border-alert-200 bg-alert-50 px-3 py-2 text-sm text-alert-700">
+                <div className="rounded-lg border border-danger-200 bg-danger-soft px-3 py-2 text-sm text-danger-deep">
                   {submitError}
                 </div>
               )}

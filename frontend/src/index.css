@@ -4,18 +4,18 @@
 
 @layer base {
   html {
-    background-color: #faf8f3;
+    background-color: #f1f3f6;
   }
 
   ::selection {
-    background-color: #dce1ff;
-    color: #14161c;
+    background-color: #dbf7ef;
+    color: #14161f;
   }
 
   h1,
   h2,
   h3 {
-    font-family: "Fraunces", serif;
+    font-family: "Space Grotesk", sans-serif;
     letter-spacing: -0.01em;
   }
 }

@@ -8,6 +8,7 @@ import { TextArea } from "@/components/Field";
 import { applicationsApi } from "@/api/applications";
 import { extractErrorMessage } from "@/api/client";
 import { useToast } from "@/components/Toast";
+import { CheckIcon, XIcon } from "@/components/icons";
 import { CreatorProfileInline } from "./CreatorProfileInline";
 import { KycReviewPanel } from "@/features/kyc/KycReviewPanel";
 
@@ -79,12 +80,20 @@ export function ApplicationInboxRow({ application }: { application: ApplicationR
             </div>
           ) : (
             <div className="flex gap-2">
-              <Button size="sm" onClick={() => setReviewing("APPROVED")}>
-                Approve
-              </Button>
-              <Button size="sm" variant="danger" onClick={() => setReviewing("REJECTED")}>
-                Reject
-              </Button>
+              <button
+                aria-label="Reject"
+                onClick={() => setReviewing("REJECTED")}
+                className="focus-ring flex h-[34px] w-[34px] items-center justify-center rounded-[10px] border border-ink-200 bg-white text-danger-500 transition-colors hover:bg-danger-soft"
+              >
+                <XIcon className="h-[15px] w-[15px]" />
+              </button>
+              <button
+                aria-label="Approve"
+                onClick={() => setReviewing("APPROVED")}
+                className="focus-ring flex h-[34px] w-[34px] items-center justify-center rounded-[10px] border border-signal-500 bg-signal-500 text-white transition-colors hover:bg-signal-600"
+              >
+                <CheckIcon className="h-[15px] w-[15px]" />
+              </button>
             </div>
           )}
         </div>

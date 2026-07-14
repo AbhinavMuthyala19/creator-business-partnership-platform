@@ -12,6 +12,7 @@ import { StatusPill } from "@/components/StatusPill";
 import { FullPageSpinner } from "@/components/Spinner";
 import { EmptyState } from "@/components/EmptyState";
 import { CompassIcon } from "@/components/icons";
+import { Pagination } from "@/components/Pagination";
 import type { Campaign, CampaignStatus } from "@/types";
 
 const schema = z
@@ -113,7 +114,7 @@ function CampaignListItem({ campaign }: { campaign: Campaign }) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="font-display text-lg font-semibold text-ink-900">{campaign.title}</h3>
-          <p className="text-xs text-ink-400">
+          <p className="font-mono text-xs text-ink-400">
             {campaign.startDate} – {campaign.endDate} · {inrFormatter.format(campaign.ratePerThousandViewsInr)} / 1,000 views
           </p>
         </div>
@@ -218,19 +219,7 @@ export function BusinessCampaignsPage() {
         </div>
       )}
 
-      {data && data.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-3 pt-2">
-          <Button variant="secondary" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
-            Previous
-          </Button>
-          <span className="text-sm text-ink-400">
-            Page {data.page + 1} of {data.totalPages}
-          </span>
-          <Button variant="secondary" size="sm" disabled={data.last} onClick={() => setPage((p) => p + 1)}>
-            Next
-          </Button>
-        </div>
-      )}
+      {data && <Pagination page={data.page} totalPages={data.totalPages} last={data.last} onPageChange={setPage} />}
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { CampaignCard } from "@/features/campaigns/CampaignCard";
 import { EmptyState } from "@/components/EmptyState";
 import { FullPageSpinner } from "@/components/Spinner";
 import { CompassIcon } from "@/components/icons";
-import { Button } from "@/components/Button";
+import { Pagination } from "@/components/Pagination";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
 export function DiscoverCampaignsPage() {
@@ -35,7 +35,7 @@ export function DiscoverCampaignsPage() {
             setPage(0);
           }}
           placeholder="Search by campaign title…"
-          className="focus-ring w-full max-w-sm rounded-full border border-ink-200 bg-white px-4 py-2.5 text-sm placeholder:text-ink-300 sm:max-w-xs"
+          className="focus-ring w-full max-w-sm rounded-[10px] border border-ink-200 bg-white px-4 py-2.5 text-sm placeholder:text-ink-300 sm:max-w-xs"
         />
       </div>
 
@@ -55,19 +55,7 @@ export function DiscoverCampaignsPage() {
             ))}
           </div>
 
-          {data.totalPages > 1 && (
-            <div className="flex items-center justify-center gap-3 pt-2">
-              <Button variant="secondary" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
-                Previous
-              </Button>
-              <span className="text-sm text-ink-400">
-                Page {data.page + 1} of {data.totalPages}
-              </span>
-              <Button variant="secondary" size="sm" disabled={data.last} onClick={() => setPage((p) => p + 1)}>
-                Next
-              </Button>
-            </div>
-          )}
+          <Pagination page={data.page} totalPages={data.totalPages} last={data.last} onPageChange={setPage} />
         </>
       )}
     </div>

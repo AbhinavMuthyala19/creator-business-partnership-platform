@@ -23,12 +23,13 @@ export function TickMeter({ value, max, ticks = 12, label, accent = "signal", cl
           <span>{label}</span>
         </div>
       )}
-      <div className="flex items-center gap-[3px]">
+      <div className="flex h-4 items-end gap-[2px]">
         {Array.from({ length: ticks }).map((_, i) => (
           <span
             key={i}
             className={clsx(
-              "h-4 w-1 rounded-full transition-colors",
+              "w-[3px] rounded-[1px] transition-colors",
+              i % 4 === 0 ? "h-full" : "h-[60%]",
               i < filledTicks ? accentClass : "bg-ink-100",
             )}
           />

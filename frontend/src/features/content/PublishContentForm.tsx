@@ -39,7 +39,7 @@ export function PublishContentForm({ content }: { content: ContentRecord }) {
         <p className="text-sm text-ink-600">
           Approved! Post this content to Instagram from your own account, then paste the live link here.
         </p>
-        {error && <div className="rounded-lg border border-alert-200 bg-alert-50 px-3 py-2 text-sm text-alert-700">{error}</div>}
+        {error && <div className="rounded-lg border border-danger-200 bg-danger-soft px-3 py-2 text-sm text-danger-deep">{error}</div>}
         <Input
           placeholder="https://www.instagram.com/p/…"
           value={postUrl}

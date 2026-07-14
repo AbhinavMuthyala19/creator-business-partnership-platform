@@ -75,7 +75,7 @@ export function KycDocumentUploadField({ value, onChange, error }: KycDocumentUp
           if (file) handleFile(file);
         }}
       />
-      {(error || uploadError) && <span className="text-xs font-medium text-alert-500">{error || uploadError}</span>}
+      {(error || uploadError) && <span className="text-xs font-medium text-danger-500">{error || uploadError}</span>}
     </div>
   );
 }

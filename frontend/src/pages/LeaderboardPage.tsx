@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { leaderboardApi } from "@/api/leaderboard";
 import { FullPageSpinner } from "@/components/Spinner";
-import { Button } from "@/components/Button";
+import { Pagination } from "@/components/Pagination";
 import { LeaderboardTable } from "@/features/leaderboard/LeaderboardTable";
 
 export function LeaderboardPage() {
@@ -22,19 +22,7 @@ export function LeaderboardPage() {
 
       {isLoading || !data ? <FullPageSpinner /> : <LeaderboardTable entries={data.content} />}
 
-      {data && data.totalPages > 1 && (
-        <div className="flex items-center justify-center gap-3 pt-2">
-          <Button variant="secondary" size="sm" disabled={page === 0} onClick={() => setPage((p) => p - 1)}>
-            Previous
-          </Button>
-          <span className="text-sm text-ink-400">
-            Page {data.page + 1} of {data.totalPages}
-          </span>
-          <Button variant="secondary" size="sm" disabled={data.last} onClick={() => setPage((p) => p + 1)}>
-            Next
-          </Button>
-        </div>
-      )}
+      {data && <Pagination page={data.page} totalPages={data.totalPages} last={data.last} onPageChange={setPage} />}
     </div>
   );
 }

@@ -9,17 +9,17 @@ function initialsFrom(name: string) {
 }
 
 const palette = [
-  "bg-signal-100 text-signal-700",
-  "bg-gold-100 text-gold-700",
-  "bg-emerald-100 text-emerald-700",
-  "bg-alert-100 text-alert-700",
+  "bg-signal-soft text-signal-deep",
+  "bg-gold-soft text-gold-deep",
+  "bg-alert-soft text-alert-deep",
+  "bg-danger-soft text-danger-deep",
 ];
 
 export function Avatar({ name, size = 40, className }: { name: string; size?: number; className?: string }) {
   const paletteIndex = name.length % palette.length;
   return (
     <span
-      className={clsx("flex shrink-0 items-center justify-center rounded-full font-semibold", palette[paletteIndex], className)}
+      className={clsx("flex shrink-0 items-center justify-center rounded-avatar font-display font-semibold", palette[paletteIndex], className)}
       style={{ width: size, height: size, fontSize: size * 0.4 }}
     >
       {initialsFrom(name) || "?"}

@@ -16,8 +16,8 @@ export function ReviewNotesTimeline({ notes }: { notes: ContentReviewNote[] }) {
               <span className="absolute -left-[21px] top-1 h-2.5 w-2.5 rounded-full bg-ink-300" />
               <div className="flex items-center gap-2">
                 <StatusPill status={note.decision} />
-                <span className="text-xs text-ink-400">v{note.contentVersion}</span>
-                <span className="text-xs text-ink-300">{new Date(note.createdAt).toLocaleDateString()}</span>
+                <span className="font-mono text-xs text-ink-400">v{note.contentVersion}</span>
+                <span className="font-mono text-xs text-ink-300">{new Date(note.createdAt).toLocaleDateString()}</span>
               </div>
               {note.noteText && <p className="mt-1 text-sm text-ink-600">{note.noteText}</p>}
             </li>

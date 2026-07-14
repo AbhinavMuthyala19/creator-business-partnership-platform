@@ -14,7 +14,7 @@ const variantClasses: Record<Variant, string> = {
   primary: "bg-ink-900 text-paper-50 hover:bg-ink-800 active:bg-ink-950",
   secondary: "bg-white text-ink-900 border border-ink-200 hover:border-ink-400 hover:bg-ink-50",
   ghost: "bg-transparent text-ink-700 hover:bg-ink-100",
-  danger: "bg-alert-500 text-white hover:bg-alert-600",
+  danger: "bg-white text-danger-deep border border-ink-200 hover:bg-danger-soft",
   gold: "bg-gold-400 text-ink-950 hover:bg-gold-500",
 };
 
@@ -31,7 +31,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={clsx(
-          "focus-ring inline-flex items-center justify-center rounded-full font-medium transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50",
+          "focus-ring inline-flex items-center justify-center rounded-[10px] font-medium transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-50",
           variantClasses[variant],
           sizeClasses[size],
           className,

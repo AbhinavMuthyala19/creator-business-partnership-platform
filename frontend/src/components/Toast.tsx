@@ -35,8 +35,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             key={toast.id}
             className={clsx(
               "animate-fade-in pointer-events-auto min-w-[260px] max-w-sm rounded-xl border px-4 py-3 text-sm font-medium shadow-pop",
-              toast.variant === "success" && "border-emerald-200 bg-emerald-50 text-emerald-800",
-              toast.variant === "error" && "border-alert-200 bg-alert-50 text-alert-800",
+              toast.variant === "success" && "border-signal-200 bg-signal-soft text-signal-deep",
+              toast.variant === "error" && "border-danger-200 bg-danger-soft text-danger-deep",
               toast.variant === "info" && "border-ink-200 bg-white text-ink-800",
             )}
           >

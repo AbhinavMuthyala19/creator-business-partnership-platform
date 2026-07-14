@@ -7,19 +7,19 @@ const compactNumber = new Intl.NumberFormat("en-US", { notation: "compact", maxi
 function RankBadge({ rank }: { rank: number }) {
   if (rank === 1) {
     return (
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gold-400 text-xs font-bold text-ink-950">
+      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gold-400 font-mono text-xs font-bold text-ink-950">
         {rank}
       </span>
     );
   }
   if (rank <= 3) {
     return (
-      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink-100 text-xs font-bold text-ink-700">
+      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink-100 font-mono text-xs font-bold text-ink-700">
         {rank}
       </span>
     );
   }
-  return <span className="flex h-7 w-7 items-center justify-center text-sm font-medium text-ink-400">{rank}</span>;
+  return <span className="flex h-7 w-7 items-center justify-center font-mono text-sm font-medium text-ink-400">{rank}</span>;
 }
 
 export function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
@@ -34,8 +34,8 @@ export function LeaderboardRow({ entry }: { entry: LeaderboardEntry }) {
           <span className="font-medium text-ink-900">{entry.creatorDisplayName}</span>
         </div>
       </td>
-      <td className="py-3 pr-4 text-right tabular-nums text-ink-600">{entry.publishedContentCount}</td>
-      <td className="py-3 pr-4 text-right font-display text-base font-semibold tabular-nums text-ink-900">
+      <td className="py-3 pr-4 text-right font-mono tabular-nums text-ink-600">{entry.publishedContentCount}</td>
+      <td className="py-3 pr-4 text-right font-mono text-base font-semibold tabular-nums text-ink-900">
         {compactNumber.format(entry.totalViews)}
       </td>
     </tr>

@@ -55,13 +55,13 @@ export function PayoutPanel({ content }: { content: ContentRecord }) {
 
       <div className="mt-3 flex items-center justify-between rounded-lg bg-paper-100 px-3 py-2.5">
         <div>
-          <p className="font-display text-lg font-semibold text-ink-900">{inrFormatter.format(data.amountInr)}</p>
-          <p className="text-xs text-ink-400">
+          <p className="font-mono text-lg font-semibold text-ink-900">{inrFormatter.format(data.amountInr)}</p>
+          <p className="font-mono text-xs text-ink-400">
             {data.viewCountUsed.toLocaleString()} / {ELIGIBILITY_THRESHOLD.toLocaleString()} views
           </p>
         </div>
         {data.status === "PAID" && data.paidAt && (
-          <p className="text-xs text-ink-400">Paid {new Date(data.paidAt).toLocaleDateString()}</p>
+          <p className="font-mono text-xs text-ink-400">Paid {new Date(data.paidAt).toLocaleDateString()}</p>
         )}
       </div>
 

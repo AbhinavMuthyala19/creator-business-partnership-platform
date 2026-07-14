@@ -161,7 +161,7 @@ function FieldArraySection({
             <button
               type="button"
               onClick={() => onRemove(index)}
-              className="focus-ring shrink-0 rounded-lg px-2 text-sm text-ink-400 hover:bg-alert-50 hover:text-alert-600"
+              className="focus-ring shrink-0 rounded-lg px-2 text-sm text-ink-400 hover:bg-danger-soft hover:text-danger-deep"
             >
               Remove
             </button>

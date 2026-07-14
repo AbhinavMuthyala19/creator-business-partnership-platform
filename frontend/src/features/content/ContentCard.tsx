@@ -62,7 +62,7 @@ export function ContentCard({ content }: { content: ContentRecord }) {
         <div className="border-t border-ink-100 pt-4">
           {editing ? (
             <div className="flex flex-col gap-4">
-              {error && <div className="rounded-lg border border-alert-200 bg-alert-50 px-3 py-2 text-sm text-alert-700">{error}</div>}
+              {error && <div className="rounded-lg border border-danger-200 bg-danger-soft px-3 py-2 text-sm text-danger-deep">{error}</div>}
               <MediaUploadField value={media} onChange={setMedia} />
               <TextArea label="Caption" value={caption} onChange={(e) => setCaption(e.target.value)} />
               <div className="flex gap-2">

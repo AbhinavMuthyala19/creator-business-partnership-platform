@@ -51,7 +51,7 @@ export function RegisterPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="card-surface flex flex-col gap-4 p-7">
           {serverError && (
-            <div className="rounded-lg border border-alert-200 bg-alert-50 px-3 py-2 text-sm text-alert-700">
+            <div className="rounded-lg border border-danger-200 bg-danger-soft px-3 py-2 text-sm text-danger-deep">
               {serverError}
             </div>
           )}

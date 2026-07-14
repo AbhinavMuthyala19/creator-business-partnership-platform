@@ -41,10 +41,10 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-paper px-4">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-ink-950 text-gold-400">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gold-400 text-ink-900">
             <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
               <path d="M9 21.5V10.5H18.5" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M9 16H16.5" stroke="#5E6DFB" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M9 16H16.5" stroke="#2FBE9A" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
           <h1 className="font-display text-2xl font-semibold text-ink-900">Welcome back</h1>
@@ -53,7 +53,7 @@ export function LoginPage() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="card-surface flex flex-col gap-4 p-7">
           {serverError && (
-            <div className="rounded-lg border border-alert-200 bg-alert-50 px-3 py-2 text-sm text-alert-700">
+            <div className="rounded-lg border border-danger-200 bg-danger-soft px-3 py-2 text-sm text-danger-deep">
               {serverError}
             </div>
           )}

@@ -14,7 +14,7 @@ export function FieldWrapper({ label, error, hint, children }: FieldWrapperProps
       {label && <span className="text-sm font-medium text-ink-700">{label}</span>}
       {children}
       {hint && !error && <span className="text-xs text-ink-400">{hint}</span>}
-      {error && <span className="text-xs font-medium text-alert-500">{error}</span>}
+      {error && <span className="text-xs font-medium text-danger-500">{error}</span>}
     </label>
   );
 }
@@ -32,7 +32,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, h
   <FieldWrapper label={label} error={error} hint={hint}>
     <input
       ref={ref}
-      className={clsx(baseInputClasses, error && "border-alert-300 focus-visible:ring-alert-300", className)}
+      className={clsx(baseInputClasses, error && "border-danger-300 focus-visible:ring-danger-300", className)}
       {...props}
     />
   </FieldWrapper>
@@ -51,7 +51,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       <textarea
         ref={ref}
         rows={rows}
-        className={clsx(baseInputClasses, "resize-none", error && "border-alert-300 focus-visible:ring-alert-300", className)}
+        className={clsx(baseInputClasses, "resize-none", error && "border-danger-300 focus-visible:ring-danger-300", className)}
         {...props}
       />
     </FieldWrapper>

@@ -61,15 +61,15 @@ export function ContentMetricsPanel({ content }: { content: ContentRecord }) {
           <div className="mt-3 grid grid-cols-3 gap-3">
             <div className="rounded-lg bg-paper-100 px-3 py-2.5">
               <p className="text-[11px] uppercase tracking-wide text-ink-400">Likes</p>
-              <p className="font-display text-lg font-semibold text-ink-900">{formatCount(latest?.likeCount ?? null)}</p>
+              <p className="font-mono text-lg font-semibold text-ink-900">{formatCount(latest?.likeCount ?? null)}</p>
             </div>
             <div className="rounded-lg bg-paper-100 px-3 py-2.5">
               <p className="text-[11px] uppercase tracking-wide text-ink-400">Comments</p>
-              <p className="font-display text-lg font-semibold text-ink-900">{formatCount(latest?.commentCount ?? null)}</p>
+              <p className="font-mono text-lg font-semibold text-ink-900">{formatCount(latest?.commentCount ?? null)}</p>
             </div>
-            <div className="rounded-lg bg-gold-50 px-3 py-2.5">
-              <p className="text-[11px] uppercase tracking-wide text-gold-700">Views</p>
-              <p className="font-display text-lg font-semibold text-ink-900">{formatCount(latest?.viewCount ?? null)}</p>
+            <div className="rounded-lg bg-gold-soft px-3 py-2.5">
+              <p className="text-[11px] uppercase tracking-wide text-gold-deep">Views</p>
+              <p className="font-mono text-lg font-semibold text-ink-900">{formatCount(latest?.viewCount ?? null)}</p>
             </div>
           </div>
 
@@ -100,10 +100,10 @@ export function ContentMetricsPanel({ content }: { content: ContentRecord }) {
                     <tbody>
                       {historyQuery.data.content.map((snapshot) => (
                         <tr key={snapshot.id} className="border-t border-ink-100 text-ink-700">
-                          <td className="py-1.5 pr-4">{timeAgo(snapshot.fetchedAt)}</td>
-                          <td className="py-1.5 pr-4 tabular-nums">{formatCount(snapshot.likeCount)}</td>
-                          <td className="py-1.5 pr-4 tabular-nums">{formatCount(snapshot.commentCount)}</td>
-                          <td className="py-1.5 tabular-nums">{formatCount(snapshot.viewCount)}</td>
+                          <td className="py-1.5 pr-4 font-mono">{timeAgo(snapshot.fetchedAt)}</td>
+                          <td className="py-1.5 pr-4 font-mono tabular-nums">{formatCount(snapshot.likeCount)}</td>
+                          <td className="py-1.5 pr-4 font-mono tabular-nums">{formatCount(snapshot.commentCount)}</td>
+                          <td className="py-1.5 font-mono tabular-nums">{formatCount(snapshot.viewCount)}</td>
                         </tr>
                       ))}
                     </tbody>
