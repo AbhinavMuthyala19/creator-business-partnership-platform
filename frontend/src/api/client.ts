@@ -4,6 +4,8 @@ import type { AuthResponse } from "@/types";
 const ACCESS_TOKEN_KEY = "escobar.accessToken";
 const REFRESH_TOKEN_KEY = "escobar.refreshToken";
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) || "/api";
+
 export const tokenStorage = {
   getAccessToken: () => localStorage.getItem(ACCESS_TOKEN_KEY),
   getRefreshToken: () => localStorage.getItem(REFRESH_TOKEN_KEY),
@@ -18,7 +20,7 @@ export const tokenStorage = {
 };
 
 export const apiClient = axios.create({
-  baseURL: "/api",
+  baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -43,7 +45,7 @@ async function refreshAccessToken(): Promise<string | null> {
   if (!refreshToken) return null;
 
   try {
-    const response = await axios.post<AuthResponse>("/api/auth/refresh", { refreshToken });
+    const response = await axios.post<AuthResponse>(`${API_BASE_URL}/auth/refresh`, { refreshToken });
     tokenStorage.setTokens(response.data.accessToken, response.data.refreshToken);
     return response.data.accessToken;
   } catch {
