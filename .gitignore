@@ -15,6 +15,9 @@ frontend/dist/
 frontend/.vite/
 frontend/*.tsbuildinfo
 
+# Deployment tooling
+.wrangler/
+
 # IDE
 .idea/
 .vscode/
